@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autism Detection System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: url('static/img.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+        .container {
+            background: rgba(10, 9, 9, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+            position: relative;
+        }
+        h2, h4 {
+            color: #FFD700;
+        }
+        label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background: #FFD700;
+            border: none;
+            color: black;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background: #FFC107;
+        }
+        .btn-secondary {
+            background: #f8f9fa;
+            color: black;
+            font-weight: bold;
+        }
+        .form-control {
+            border-radius: 8px;
+        }
+        #imagePreview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+        .top-right-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Home & Logout Buttons -->
+        <div class="top-right-buttons">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Home</a>
+            
+        </div>
+
+        <h2 class="text-center mb-4">Autism Detection System</h2>
+        
+        <form action="/index" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <!-- User Inputs Section -->
+                <div class="col-md-6">
+                    <h4>User Inputs</h4>
+                    
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" class="form-control" name="age" min="0" max="100" required>
+
+                    <label for="gender">Gender (0: Female, 1: Male):</label>
+                    <input type="number" id="gender" class="form-control" name="gender" min="0" max="1" required>
+
+                    <label for="jundice">Jaundice (0: No, 1: Yes):</label>
+                    <input type="number" id="jundice" class="form-control" name="jundice" min="0" max="1" required>
+
+                    <label for="used_app_before">Used Screening App Before (0: No, 1: Yes):</label>
+                    <input type="number" id="used_app_before" class="form-control" name="used_app_before" min="0" max="1" required>
+
+                    <label for="result">Screening Result (0-10):</label>
+                    <input type="number" id="result" class="form-control" name="result" min="0" max="10" required>
+
+                    <label for="age_desc">Age Description (0: Child, 1: Adult):</label>
+                    <input type="number" id="age_desc" class="form-control" name="age_desc" min="0" max="1" required>
+                </div>
+                
+                <!-- Autism Screening Questions -->
+                <div class="col-md-6">
+                    <h4>Autism Screening Questions</h4>
+
+<label for="A1_Score">A1: The child does not respond to their name being called.</label>
+<input type="number" id="A1_Score" class="form-control" name="A1_Score" min="0" max="1" required>
+
+<label for="A2_Score">A2: It is difficult to get eye contact with the child.</label>
+<input type="number" id="A2_Score" class="form-control" name="A2_Score" min="0" max="1" required>
+
+<label for="A3_Score">A3: The child does not point to indicate they want something</label>
+<input type="number" id="A3_Score" class="form-control" name="A3_Score" min="0" max="1" required>
+
+<label for="A4_Score">A4: The child does not point to share an interest with others.</label>
+<input type="number" id="A4_Score" class="form-control" name="A4_Score" min="0" max="1" required>
+
+<label for="A5_Score">A5: The child does not engage in pretend play (e.g., pretending to talk on the phone, caring for dolls).</label>
+<input type="number" id="A5_Score" class="form-control" name="A5_Score" min="0" max="1" required>
+
+<label for="A6_Score">A6: The child does not follow where you are looking</label>
+<input type="number" id="A6_Score" class="form-control" name="A6_Score" min="0" max="1" required>
+
+<label for="A7_Score">A7: The child does not show signs of wanting to comfort others when they are upset.</label>
+<input type="number" id="A7_Score" class="form-control" name="A7_Score" min="0" max="1" required>
+
+<label for="A8_Score">A8: The child’s first word was unclear.</label>
+<input type="number" id="A8_Score" class="form-control" name="A8_Score" min="0" max="1" required>
+
+<label for="A9_Score">A9: The child does not use simple gestures (e.g., waving goodbye)</label>
+<input type="number" id="A9_Score" class="form-control" name="A9_Score" min="0" max="1" required>
+
+<label for="A10_Score">A10: The child frequently stares at nothing with no apparent purpose.</label>
+<input type="number" id="A10_Score" class="form-control" name="A10_Score" min="0" max="1" required>
+
+                </div>
+            </div>
+            
+            <!-- File Upload Section -->
+            <div class="mt-4">
+                <h4>Upload Image</h4>
+                <input type="file" class="form-control" name="image" accept="image/*" id="imageUpload" required>
+                <img id="imagePreview" alt="Uploaded Image Preview">
+            </div>
+            
+            <!-- Predict Button (Moved Below) -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary w-50">Predict</button>
+            </div>
+        </form>
+        
+        <!-- Display Prediction Results -->
+        <!-- {% if prediction %}
+        <div class="mt-5 p-4 border rounded bg-light text-dark">
+            <h4>Prediction Results</h4>
+            <p><strong>Fuzzy Score:</strong> {{ confidence_score }}</p>
+            
+            {% if confidence_score >= 0.49 %}
+                <p><strong>Final Diagnosis:</strong> <span class="text-danger">Diseased</span></p>
+            {% else %}
+                <p><strong>Final Diagnosis:</strong> <span class="text-success">Not Diseased</span></p>
+            {% endif %}
+        </div> -->
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById("imageUpload").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imagePreview = document.getElementById("imagePreview");
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+</body>
+</html>
